@@ -9,8 +9,7 @@ create_directory(src_dir)
 gen_files = get_gen_files()
 cmd = "{0} -directory={1} -filename=testLarge1 -gen_size_mb={2}".format(
     gen_files, src_dir, 7*1024)
-status = os.system(cmd)
-if status:
+if status := os.system(cmd):
     error("Failure generating data running {0}:{1}".format(cmd, status))
 
 # test(s)

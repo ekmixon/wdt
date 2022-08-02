@@ -22,25 +22,23 @@ root_dir = create_test_directory("/tmp")
 # create random files
 src_dir = generate_random_files(256 * 1024)
 
-# generate file list
-file_list_in = open(os.path.join(root_dir, "file_list"), 'w')
-for root, dirs, files in os.walk(src_dir):
-    for file in files:
-        if file == "file0":
-            # skip that one
-            continue
-        if file == "file1":
-            # add a size for file1
-            file_list_in.write("{0}\t{1}".format(file, 1025))
-        else:
-            file_list_in.write(file)
-        file_list_in.write('\n')
-file_list_in.close()
+with open(os.path.join(root_dir, "file_list"), 'w') as file_list_in:
+    for root, dirs, files in os.walk(src_dir):
+        for file in files:
+            if file == "file0":
+                # skip that one
+                continue
+            if file == "file1":
+                # add a size for file1
+                file_list_in.write("{0}\t{1}".format(file, 1025))
+            else:
+                file_list_in.write(file)
+            file_list_in.write('\n')
 print("Done with set-up")
 
 wdtbin_opts = " -full_reporting --enable_perf_stat_collection "
 
-wdt_receiver_arg = wdtbin_opts + " -num_ports 2"
+wdt_receiver_arg = f"{wdtbin_opts} -num_ports 2"
 wdt_sender_arg = wdtbin_opts
 
 run_test("basic file list", "")

@@ -23,12 +23,8 @@ def testNegotiation(higher):
     url_match = re.search(
         "[?&]{0}=([0-9]+)".format(protocol_key), connection_url
     )
-    protocol = url_match.group(1)
-    if higher:
-        new_protocol = int(protocol) + 1
-    else:
-        new_protocol = int(protocol) - 1
-
+    protocol = url_match[1]
+    new_protocol = int(protocol) + 1 if higher else int(protocol) - 1
     prev_str = "{0}={1}".format(protocol_key, protocol)
     new_str = "{0}={1}".format(protocol_key, new_protocol)
     new_connection_url = connection_url.replace(prev_str, new_str)

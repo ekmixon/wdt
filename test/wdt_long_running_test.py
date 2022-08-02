@@ -12,7 +12,7 @@ def run_test(test_name, connection_url):
 
 
 wdt_version = get_wdt_version()
-print("wdt protocol version " + wdt_version)
+print(f"wdt protocol version {wdt_version}")
 
 create_test_directory("/tmp")
 

@@ -11,18 +11,17 @@ def run_test(name, receiver_extra_flags, sender_extra_flags, expect_fail=False):
 
 
 root_dir = create_test_directory("/tmp")
-data_dir = root_dir + "/dir1"
+data_dir = f"{root_dir}/dir1"
 create_directory(data_dir)
-fname = data_dir + "/existingfile"
-f = open(fname, "w")
-f.write("existing data")
-f.close()
+fname = f"{data_dir}/existingfile"
+with open(fname, "w") as f:
+    f.write("existing data")
 mtime = os.stat(fname).st_mtime
 print("mtime is {0}".format(mtime))
 
 test_count = 1
 
-sender_args = "-directory " + data_dir
+sender_args = f"-directory {data_dir}"
 receiver_args = sender_args
 
 run_test("default - should fail", receiver_args, sender_args, True)
@@ -33,8 +32,11 @@ if newmtime != mtime:
 mtime = newmtime
 
 run_test(
-    "with -overwrite should succeed", receiver_args + " -overwrite", sender_args
+    "with -overwrite should succeed",
+    f"{receiver_args} -overwrite",
+    sender_args,
 )
+
 
 newmtime = os.stat(fname).st_mtime
 if newmtime == mtime:

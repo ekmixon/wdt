@@ -30,7 +30,7 @@ def test(resumption):
         print("Test with ipv6 client is disabled in this system")
         return
 
-    receiver_cmd = get_receiver_binary() + " -skip_writes -num_ports=1 -v 1"
+    receiver_cmd = f"{get_receiver_binary()} -skip_writes -num_ports=1 -v 1"
     print(receiver_cmd)
     receiver_process = subprocess.Popen(
         receiver_cmd.split(),
@@ -40,21 +40,16 @@ def test(resumption):
 
     connection_url = receiver_process.stdout.readline().strip()
     print(connection_url)
-    # wdt url can be of two kinds :
-    # 1. wdt://localhost?ports=1,2,3,4
-    # 2. wdt://localhost:1?num_ports=4
-    # the second kind of url is another way of expressing the first one
-    url_match = re.search('\?(.*&)?ports=([0-9]+).*', connection_url)
-    if not url_match:
-        url_match = re.search(':([0-9]+)(\?.*)', connection_url)
-        rest_of_url = url_match.group(2)
-        port_to_block = url_match.group(1)
-        start_port = ":" + port_to_block
-    else:
-        rest_of_url = url_match.group(0)
+    if url_match := re.search('\?(.*&)?ports=([0-9]+).*', connection_url):
+        rest_of_url = url_match[0]
         start_port = ""
-        port_to_block = url_match.group(2)
-    print(rest_of_url + " " + port_to_block)
+        port_to_block = url_match[2]
+    else:
+        url_match = re.search(':([0-9]+)(\?.*)', connection_url)
+        rest_of_url = url_match[2]
+        port_to_block = url_match[1]
+        start_port = f":{port_to_block}"
+    print(f"{rest_of_url} {port_to_block}")
 
     # start a thread to wait for receiver finish
     thread = Thread(target=wait_for_receiver_finish, args=[receiver_process])
@@ -72,7 +67,7 @@ def test(resumption):
         port_to_block, start_port, rest_of_url, get_sender_binary()
     )
     if resumption:
-        sender_cmd = sender_cmd + " -enable_download_resumption"
+        sender_cmd += " -enable_download_resumption"
     print(sender_cmd)
     status = os.system(sender_cmd)
     status >>= 8

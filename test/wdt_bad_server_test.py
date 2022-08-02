@@ -22,9 +22,7 @@ def start_server_thread():
     print("Before accept")
     (conn, addr) = bad_socket.accept()
     print("Connected with {0}:{1}".format(addr[0], addr[1]))
-    while True:
-        if stop:
-            break
+    while not stop:
         try:
             conn.recv(1024)
             # sleep for 1 ms. This limits the rate to 1MBytes/sec or less
